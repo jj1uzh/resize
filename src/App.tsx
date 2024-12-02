@@ -1,5 +1,5 @@
 import './App.css'
-import { useCallback, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { resize, useImage } from './lib/image'
 
 export default function App() {
@@ -23,10 +23,38 @@ export default function App() {
     }
   }, [])
 
+  const main = useRef<HTMLElement>(null)
+  useEffect(() => {
+    const mainRef = main.current
+    if (!mainRef) {
+      return
+    }
+    function onPaste(event: ClipboardEvent) {
+      event.preventDefault()
+      const data = event.clipboardData
+      if (data === null) {
+        return
+      }
+      for (const item of data.items) {
+        if (item.type === 'image/png') {
+          const file = item.getAsFile()
+          if (file === null) continue
+          const dataURL = URL.createObjectURL(file)
+          setOriginalImageSrc(dataURL)
+        }
+      }
+    }
+    mainRef.addEventListener('paste', onPaste)
+    return () => {
+      mainRef.removeEventListener('paste', onPaste)
+    }
+  }, [])
+
   return (
-    <>
+    <main ref={main}>
       <h1>Resize</h1>
       <button onClick={pasteFromClipboard}>Paste from clipboard</button>
+      <span> or C-v</span>
       <div>
         <h2>Original</h2>
         <img id="preview-original" src={originalImageSrc} />
@@ -42,7 +70,7 @@ export default function App() {
             width={resizingWidth}
             height={resizingHeight} />}
       </div>
-    </>
+    </main>
   )
 }
 
