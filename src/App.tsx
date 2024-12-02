@@ -4,8 +4,11 @@ import { resize, useImage } from './lib/image'
 
 export default function App() {
   const [originalImageSrc, setOriginalImageSrc] = useState<string | undefined>(undefined)
-  const [resizingWidth, setResizingWidth] = useState<number | undefined>(500)
-  const [resizingHeight, setResizingHeight] = useState<number | undefined>(500)
+  const originalImage = useRef<HTMLImageElement>(null)
+  const [resizingWidth, setResizingWidth] = useState<number | undefined>(undefined)
+  const [resizingHeight, setResizingHeight] = useState<number | undefined>(undefined)
+  const [originalWidth, setOriginalWidth] = useState<number | undefined>(undefined)
+  const [originalHeight, setOriginalHeight] = useState<number | undefined>(undefined)
 
   const pasteFromClipboard = useCallback(async () => {
     try {
@@ -50,6 +53,17 @@ export default function App() {
     }
   }, [])
 
+  useEffect(() => {
+    if (originalImage.current) {
+      originalImage.current.onload = () => {
+        setResizingWidth(originalImage.current!.naturalWidth)
+        setResizingHeight(originalImage.current!.naturalHeight)
+        setOriginalWidth(originalImage.current!.naturalWidth)
+        setOriginalHeight(originalImage.current!.naturalHeight)
+      }
+    }
+  }, [])
+
   return (
     <main ref={main}>
       <h1>Resize</h1>
@@ -57,13 +71,15 @@ export default function App() {
       <span> or C-v</span>
       <div>
         <h2>Original</h2>
-        <img id="preview-original" src={originalImageSrc} />
-        {originalImageSrc && <ImageInfo imageSrc={originalImageSrc} />}
+        <img id="preview-original" src={originalImageSrc} ref={originalImage} />
       </div>
       <div>
         <h2>Resized</h2>
-        <label>Width<input type="number" value={resizingWidth} onChange={(e) => setResizingWidth(parseInt(e.target.value))} /></label>
-        <label>Height<input type="number" value={resizingHeight} onChange={(e) => setResizingHeight(parseInt(e.target.value))} /></label>
+        <div>
+          <label>Width<input type="number" value={resizingWidth} onChange={(e) => setResizingWidth(parseInt(e.target.value))} /></label>
+          <label>Height<input type="number" value={resizingHeight} onChange={(e) => setResizingHeight(parseInt(e.target.value))} /></label>
+          <button onClick={() => { setResizingWidth(originalWidth); setResizingHeight(originalHeight) }}>Reset</button>
+        </div>
         {originalImageSrc && resizingWidth && resizingHeight &&
           <ResizedImage
             originalImageSrc={originalImageSrc}
@@ -78,21 +94,6 @@ function ResizedImage({ originalImageSrc, width, height }: { originalImageSrc: s
   const originalImage = useImage(originalImageSrc)
   const resizedImageSrc = originalImage ? resize(originalImage, width, height) : undefined
   return (
-    <>
-      <img id="preview-resized" src={resizedImageSrc} />
-      {resizedImageSrc && <ImageInfo imageSrc={resizedImageSrc} />}
-    </>
-  )
-}
-
-function ImageInfo({ imageSrc }: { imageSrc: string }) {
-  const image = useImage(imageSrc)
-  return (
-    <dl>
-      <dt>Width</dt><dd>{image?.width}</dd>
-      <dt>Height</dt><dd>{image?.height}</dd>
-      <dt>Natural Width</dt><dd>{image?.naturalWidth}</dd>
-      <dt>Natural Height</dt><dd>{image?.naturalHeight}</dd>
-    </dl>
+    <img id="preview-resized" src={resizedImageSrc} />
   )
 }
