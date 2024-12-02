@@ -9,6 +9,7 @@ export default function App() {
   const [resizingHeight, setResizingHeight] = useState<number | undefined>(undefined)
   const [originalWidth, setOriginalWidth] = useState<number | undefined>(undefined)
   const [originalHeight, setOriginalHeight] = useState<number | undefined>(undefined)
+  const [keepsRatio, setKeepsRatio] = useState<boolean>(true)
 
   const pasteFromClipboard = useCallback(async () => {
     try {
@@ -64,6 +65,19 @@ export default function App() {
     }
   }, [])
 
+  function changeWidth(toWidth: number) {
+    if (keepsRatio && originalHeight && originalWidth) {
+      setResizingHeight(toWidth * originalHeight / originalWidth)
+    }
+    setResizingWidth(toWidth)
+  }
+  function changeHeight(toHeight: number) {
+    if (keepsRatio && originalHeight && originalWidth) {
+      setResizingWidth(toHeight * originalWidth / originalHeight)
+    }
+    setResizingHeight(toHeight)
+  }
+
   return (
     <main ref={main}>
       <h1>Resize</h1>
@@ -76,9 +90,10 @@ export default function App() {
       <div>
         <h2>Resized</h2>
         <div>
-          <label>Width<input type="number" value={resizingWidth} onChange={(e) => setResizingWidth(parseInt(e.target.value))} /></label>
-          <label>Height<input type="number" value={resizingHeight} onChange={(e) => setResizingHeight(parseInt(e.target.value))} /></label>
+          <label>Width<input type="number" value={resizingWidth} onChange={(e) => changeWidth(parseInt(e.target.value))} /></label>
+          <label>Height<input type="number" value={resizingHeight} onChange={(e) => changeHeight(parseInt(e.target.value))} /></label>
           <button onClick={() => { setResizingWidth(originalWidth); setResizingHeight(originalHeight) }}>Reset</button>
+          <label><input type="checkbox" checked={keepsRatio} onChange={(e) => setKeepsRatio(e.target.checked)} />Keep Ratio</label>
         </div>
         {originalImageSrc && resizingWidth && resizingHeight &&
           <ResizedImage
