@@ -11,6 +11,7 @@ export default function App() {
   const [originalHeight, setOriginalHeight] = useState<number | undefined>(undefined)
   const [keepsRatio, setKeepsRatio] = useState<boolean>(true)
   const [rotationAngle, setRotationAngle] = useState<number>(0)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const pasteFromClipboard = useCallback(async () => {
     try {
@@ -28,7 +29,7 @@ export default function App() {
         setOriginalImageSrc(dataURL)
       }
     } catch (e) {
-      console.error(e)
+      setErrorMessage(e instanceof Error ? e.message : 'Failed to paste image from clipboard')
     }
   }, [])
 
@@ -94,6 +95,7 @@ export default function App() {
   return (
     <main ref={main}>
       <h1>Resize</h1>
+      {errorMessage && <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />}
       <button onClick={pasteFromClipboard}>Paste from clipboard</button>
       <span> or C-v</span>
       <div>
@@ -123,6 +125,16 @@ export default function App() {
       </div>
     </main>
   )
+}
+
+// Error Message Component
+function ErrorMessage({ message, onClose }: { message: string, onClose: () => void }) {
+  return (
+    <div className="error-message">
+      <span>{message}</span>
+      <button onClick={onClose} aria-label="Close error message">×</button>
+    </div>
+  );
 }
 
 function ResizedImage({ originalImageSrc, width, height, rotationAngle }: { originalImageSrc: string, width: number, height: number, rotationAngle: number }) {
