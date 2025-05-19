@@ -16,10 +16,14 @@ export default function App() {
     try {
       const contents = await navigator.clipboard.read()
       for (const content of contents) {
-        if (!content.types.includes('image/png')) {
-          throw new Error('Not a png file')
+        const supportedTypes = ['image/png', 'image/jpeg']
+        const imageType = supportedTypes.find(type => content.types.includes(type))
+
+        if (!imageType) {
+          throw new Error('Not a supported image file (PNG or JPEG)')
         }
-        const blob = await content.getType('image/png')
+
+        const blob = await content.getType(imageType)
         const dataURL = URL.createObjectURL(blob)
         setOriginalImageSrc(dataURL)
       }
@@ -41,7 +45,7 @@ export default function App() {
         return
       }
       for (const item of data.items) {
-        if (item.type === 'image/png') {
+        if (item.type === 'image/png' || item.type === 'image/jpeg') {
           const file = item.getAsFile()
           if (file === null) continue
           const dataURL = URL.createObjectURL(file)
