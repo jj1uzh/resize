@@ -19,7 +19,12 @@ export function resize(image: HTMLImageElement, width: number, height: number) {
   canvas.width = width
   canvas.height = height
   ctx?.drawImage(image, 0, 0, width, height)
-  return canvas.toDataURL('image/png')
+
+  // Determine image format from source
+  const format = image.src.includes('image/jpeg') ? 'image/jpeg' : 'image/png'
+  const quality = format === 'image/jpeg' ? 0.95 : undefined
+
+  return canvas.toDataURL(format, quality)
 }
 
 export function rotate(image: HTMLImageElement, degrees: number) {
@@ -57,5 +62,9 @@ export function rotate(image: HTMLImageElement, degrees: number) {
     ctx.setTransform(1, 0, 0, 1, 0, 0)
   }
   
-  return canvas.toDataURL('image/png')
+  // Determine image format from source
+  const format = image.src.includes('image/jpeg') ? 'image/jpeg' : 'image/png'
+  const quality = format === 'image/jpeg' ? 0.95 : undefined
+
+  return canvas.toDataURL(format, quality)
 }
