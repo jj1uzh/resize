@@ -1,4 +1,4 @@
-import './App.css'
+import './ResizeApp.css'
 import { useCallback, useEffect, useRef, useState } from "react"
 import { resize, rotate, useImage } from '../lib/image'
 

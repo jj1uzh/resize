@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { render } from '@testing-library/react';
-import ResizeApp from './App';
+import ResizeApp from './ResizeApp';
 
 // Import dom-testing-library directly as the older @testing-library/react doesn't export screen or fireEvent
 import { getByText, getByLabelText, findByText, queryByText } from '@testing-library/dom';
