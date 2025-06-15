@@ -1,8 +1,8 @@
 import './App.css'
 import { useCallback, useEffect, useRef, useState } from "react"
-import { resize, rotate, useImage } from './lib/image'
+import { resize, rotate, useImage } from '../lib/image'
 
-export default function App() {
+export default function ResizeApp() {
   const [originalImageSrc, setOriginalImageSrc] = useState<string | undefined>(undefined)
   const originalImage = useRef<HTMLImageElement>(null)
   const [resizingWidth, setResizingWidth] = useState<number | undefined>(undefined)
@@ -94,6 +94,7 @@ export default function App() {
 
   return (
     <main ref={main}>
+      <title>Resize</title>
       <h1>Resize</h1>
       {errorMessage && <ErrorMessage message={errorMessage} onClose={() => setErrorMessage(null)} />}
       <button onClick={pasteFromClipboard}>Paste from clipboard</button>
@@ -140,12 +141,12 @@ function ErrorMessage({ message, onClose }: { message: string, onClose: () => vo
 function ResizedImage({ originalImageSrc, width, height, rotationAngle }: { originalImageSrc: string, width: number, height: number, rotationAngle: number }) {
   const originalImage = useImage(originalImageSrc)
   const [finalImageSrc, setFinalImageSrc] = useState<string | undefined>(undefined)
-  
+
   useEffect(() => {
     if (originalImage) {
       // First resize the image
       const resizedImageSrc = resize(originalImage, width, height)
-      
+
       // If there's rotation to be applied
       if (rotationAngle !== 0) {
         // Create a temporary image with the resized image
@@ -164,8 +165,8 @@ function ResizedImage({ originalImageSrc, width, height, rotationAngle }: { orig
 
   // Determine correct CSS classes/styles based on rotation
   // This ensures the container adjusts to the rotated dimensions
-  const imageStyle = rotationAngle % 180 === 90 || rotationAngle % 180 === 270 
-    ? { maxWidth: '100%', height: 'auto' } 
+  const imageStyle = rotationAngle % 180 === 90 || rotationAngle % 180 === 270
+    ? { maxWidth: '100%', height: 'auto' }
     : {};
 
   return (
