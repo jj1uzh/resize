@@ -1,6 +1,7 @@
 import './ResizeApp.css'
 import { useCallback, useEffect, useRef, useState } from "react"
 import { resize, rotate, useImage } from '../lib/image'
+import { Header } from '../components/Header'
 
 export default function ResizeApp() {
   const [originalImageSrc, setOriginalImageSrc] = useState<string | undefined>(undefined)
@@ -93,6 +94,8 @@ export default function ResizeApp() {
   }
 
   return (
+    <>
+      <Header />
     <main ref={main}>
       <title>Resize</title>
       <h1>Resize</h1>
@@ -125,6 +128,7 @@ export default function ResizeApp() {
             rotationAngle={rotationAngle} />}
       </div>
     </main>
+    </>
   )
 }
 
